@@ -8,10 +8,18 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'https://localhost:44319',
-        changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '/api')
+        changeOrigin: true
       }
     }
+  },
+  resolve: {
+    alias: {
+      '@': '/src'
+    }
+  },
+  optimizeDeps: {
+    include: ['@monaco-editor/react']
   }
+}); 
 }); 

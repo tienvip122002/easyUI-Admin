@@ -10,11 +10,12 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
 
   const menuItems = [
     { path: '/', icon: HomeIcon, label: 'Dashboard' },
-    { path: '/components', icon: Squares2X2Icon, label: 'Components' },
-    { path: '/tags', icon: TagIcon, label: 'Tags' },
-    { path: '/comments', icon: ChatBubbleLeftIcon, label: 'Comments' },
-    { path: '/settings', icon: Cog6ToothIcon, label: 'Settings' },
+    { path: '/component', icon: Squares2X2Icon, label: 'UI Components' },
+    { path: '/tag', icon: TagIcon, label: 'Tags' },
+    { path: '/comment', icon: ChatBubbleLeftIcon, label: 'Comments' },
+    { path: '/category', icon: Cog6ToothIcon, label: 'Categories' },
   ];
+  
 
   return (
     <div className="h-full flex flex-col">
@@ -22,7 +23,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
       <div className="h-16 flex items-center px-4">
         <h1 className={`text-white text-xl font-bold transition-all duration-300
           ${isCollapsed ? 'scale-0 w-0' : 'scale-100 w-auto'}`}>
-          Smart UI Studio
+          Smart UI Admin
         </h1>
         {isCollapsed && (
           <span className="text-white text-2xl font-bold">S</span>
@@ -33,12 +34,13 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
       <nav className="flex-1 mt-8">
         {menuItems.map((item) => {
           const Icon = item.icon;
+          const isActive = location.pathname.startsWith(item.path);
           return (
             <Link
               key={item.path}
               to={item.path}
               className={`flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white
-                ${location.pathname === item.path ? 'bg-gray-700 text-white' : ''}
+                ${isActive ? 'bg-gray-700 text-white' : ''}
                 ${isCollapsed ? 'justify-center' : ''}`}
             >
               <Icon className={`h-6 w-6 ${!isCollapsed && 'mr-3'}`} />
