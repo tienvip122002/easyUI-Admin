@@ -1,8 +1,8 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Jost', sans-serif;
-  background: linear-gradient(to bottom right, #0f0c29, #302b63, #24243e);
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -11,99 +11,51 @@ body {
 
 .container {
   position: relative;
-}
-
-.signup input {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.signup input::placeholder {
-  color: #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .main {
-  width: 350px;
-  height: 500px;
-  background: #fff;
-  border-radius: 1rem;
+  width: 480px;
+  height: 620px;
+  background: rgb(113, 58, 209);
+  border-radius: 20px;
   overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
   position: relative;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
   transition: 0.8s ease-in-out;
 }
 
-/* 👇 Gộp chung signup & login */
 .signup, .login {
   position: absolute;
   width: 100%;
   height: 100%;
-  top: 0;
-  left: 0;
-  transition: transform 0.8s ease-in-out;
+  padding: 40px 30px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  transition: 0.8s ease-in-out;
   text-align: center;
-  padding: 0 20px;
-  box-sizing: border-box;
 }
 
 .signup {
-  background: linear-gradient(to bottom, #4b3f91, #6a47ab);
+  background: linear-gradient(to bottom, #5f2c82, #49a09d);
   color: white;
   z-index: 1;
 }
 
 .login {
-  background: #ffffff;
-  color: #573b8a;
+  background: #f4f4f4;
+  color: #333;
   transform: translateY(100%);
+  border-top-left-radius: 60% 10%;
+  border-top-right-radius: 60% 10%;
   z-index: 0;
-  border-top-left-radius: 50% 10%;
-  border-top-right-radius: 50% 10%;
 }
 
-input {
-  width: 70%;
-  padding: 12px 16px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 6px;
-  outline: none;
-  font-size: 1rem;
-  color: #222; /* ✅ chữ rõ ràng */
-  background: #fff;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
-}
-
-button {
-  width: 70%;
-  padding: 12px;
-  background: #573b8a;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  margin-top: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-button:hover {
-  background: #6d44b8;
-}
-
-label {
-  font-size: 2em;
-  font-weight: bold;
-  margin-bottom: 10px;
-  transition: transform 0.3s ease;
-}
-
-/* 👇 Toggle giữa login/signup */
 .main.signup-mode .signup {
   transform: translateY(-100%);
   z-index: 0;
@@ -114,18 +66,105 @@ label {
   z-index: 1;
 }
 
-/* 👇 Form đẹp hơn */
 form {
   width: 100%;
+  max-width: 320px; /* 👈 giới hạn kích thước max để cân đối */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 18px; /* 👈 tăng khoảng cách giữa các phần tử */
+}
+
+
+input {
+  width: 100%; /* 👈 tăng từ 70% hoặc 100% */
+  padding: 16px 20px; /* 👈 tăng padding */
+  margin: 10px ;
+  border: none;
+  border-radius: 12px; /* 👈 bo tròn hơn */
+  outline: none;
+  font-size: 1.05rem; /* 👈 chữ to hơn nhẹ */
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: 0.2s ease;
+}
+
+input:focus {
+  background: #fff;
+  outline: none;
+  box-shadow: 0 0 0 2px #764ba2;
+}
+
+.signup input {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.signup input::placeholder {
+  color: #eee;
+}
+
+label {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: #764ba2;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #5f2c82;
 }
 
 .error-message {
-  color: #ff4444;
+  color: #ff3e3e;
   font-size: 14px;
-  margin-top: 10px;
   text-align: center;
+  margin-top: 8px;
+}
+
+h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.login h2 {
+  color: #333;
+}
+
+.toggle-text {
+  margin-top: 16px;
+  font-size: 0.95rem;
+  color: #ddd;
+}
+
+.login .toggle-text {
+  color: #444;
+}
+
+.toggle-text span {
+  color: #ffd700;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 4px;
+  transition: color 0.3s ease;
+}
+
+.toggle-text span:hover {
+  color: #fff;
+}
+
+.login .toggle-text span:hover {
+  color: #573b8a;
 }
