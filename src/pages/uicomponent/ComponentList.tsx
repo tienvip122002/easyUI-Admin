@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Space, Button, message, Popconfirm, Card, Typography, Switch } from 'antd';
+import { Table, Space, Button, message, Popconfirm, Card, Typography, Switch, Tag, Tooltip } from 'antd';
 import { EditOutlined, EyeOutlined, DeleteOutlined, PlusOutlined, BulbOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { UIComponent } from '../../models/uicomponent';
@@ -36,50 +36,21 @@ const ComponentList: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    
-    const fetchComponents = async () => {
-      try {
-        setLoading(true);
-        console.log('Starting API call...');
-        
-        const data = await UIComponentService.getAll();
-        console.log('API Response:', data);
-        
-        if (Array.isArray(data)) {
-          setComponents(data);
-        } else {
-          console.error('Invalid response format:', data);
-          message.error('Invalid data format received from server');
-        }
-      } catch (error: any) {
-        console.error('API Error:', {
-          message: error.message,
-          response: error.response?.data,
-          status: error.response?.status,
-          config: error.config
-        });
-        
-        if (error.response?.status === 500) {
-          message.error('Internal server error. Please try again later.');
-        } else if (error.response?.status === 401) {
-          message.error('Unauthorized access. Please login again.');
-          // navigate('/login');
-        } else {
-          message.error(error.response?.data?.message || 'Failed to fetch components');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (token) {
-      fetchComponents();
-    } else {
-      message.error('No authentication token found');
-      // navigate('/login');
-    }
+    fetchComponents();
   }, []);
+
+  const fetchComponents = async () => {
+    try {
+      setLoading(true);
+      const data = await UIComponentService.getAll();
+      console.log('Fetched components:', data);
+      setComponents(data);
+    } catch (error) {
+      console.error('Error fetching components:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDelete = async (id: string) => {
     try {
@@ -87,6 +58,7 @@ const ComponentList: React.FC = () => {
       message.success('Component deleted successfully');
       fetchComponents();
     } catch (error) {
+      console.error('Error deleting component:', error);
       message.error('Failed to delete component');
     }
   };
@@ -96,47 +68,53 @@ const ComponentList: React.FC = () => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      ellipsis: true,
-      width: '25%',
+      width: 50,
     },
     {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
-      width: '20%',
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+      width: 250,
+      render: (description: string) => (
+        <Tooltip title={description}>
+          <div style={{ 
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}>
+            {description || 'No description'}
+          </div>
+        </Tooltip>
+      ),
     },
     {
-      title: 'Framework',
-      dataIndex: 'framework',
-      key: 'framework',
-      width: '20%',
+      title: 'Price',
+      dataIndex: 'price',
+      key: 'price',
+      width: 10,
+      render: (price: number | null) => 
+        price ? `$${price.toFixed(2)}` : 'Free',
     },
     {
       title: 'Status',
       dataIndex: 'isActive',
-      key: 'isActive',
-      width: '15%',
+      key: 'status',
+      width: 10,
       render: (isActive: boolean) => (
-        <span style={{ 
-          color: isActive ? '#52c41a' : '#ff4d4f',
-          fontWeight: 500
-        }}>
+        <Tag color={isActive ? 'green' : 'red'}>
           {isActive ? 'Active' : 'Inactive'}
-        </span>
+        </Tag>
       ),
     },
     {
       title: 'Actions',
       key: 'actions',
-      width: '20%',
-      align: 'center' as const,
-      render: (_: any, record: UIComponent) => (
-        <Space size="middle">
+      width: 10,
+      render: (_, record: UIComponent) => (
+        <Space>
           <Button 
-            type="primary"
             icon={<EyeOutlined />}
             onClick={() => navigate(`/component/view/${record.id}`)}
-            ghost
           />
           <Button 
             type="primary"
@@ -144,14 +122,15 @@ const ComponentList: React.FC = () => {
             onClick={() => navigate(`/component/edit/${record.id}`)}
           />
           <Popconfirm
-            title="Are you sure to delete this component?"
-            description="This action cannot be undone."
+            title="Are you sure you want to delete this component?"
             onConfirm={() => handleDelete(record.id)}
             okText="Yes"
             cancelText="No"
-            okButtonProps={{ danger: true }}
           >
-            <Button danger icon={<DeleteOutlined />} />
+            <Button 
+              danger
+              icon={<DeleteOutlined />}
+            />
           </Popconfirm>
         </Space>
       ),
@@ -187,12 +166,11 @@ const ComponentList: React.FC = () => {
         rowKey="id"
         loading={loading}
         pagination={{
-          pageSize: 10,
+          defaultPageSize: 10,
           showSizeChanger: true,
-          showTotal: (total) => `Total ${total} items`,
-          showQuickJumper: true
+          showTotal: (total) => `Total ${total} items`
         }}
-        scroll={{ x: 1000 }}
+        scroll={{ x: 1200 }}
         bordered
       />
     </StyledCard>

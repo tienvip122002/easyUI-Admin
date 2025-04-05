@@ -1,14 +1,15 @@
 export interface UIComponent {
   id: string;
   name: string;
-  code: string;
   description?: string;
+  html?: string;
+  css?: string;
+  js?: string;
   previewUrl?: string;
   type: string;
   framework: string;
-  css?: string;
-  html?: string;
-  js?: string;
+  price?: number | null;
+  discountPrice?: number | null;
   isActive: boolean;
   createdAt: string;
   createdBy: string;
@@ -23,6 +24,19 @@ export interface CreateUIComponentDto {
   previewUrl?: string;
   type: string;
   framework: string;
+}
+
+export interface UpdateUIComponentRequest {
+  name: string;
+  description?: string | null;
+  html?: string | null;
+  css?: string | null;
+  js?: string | null;
+  previewUrl?: string | null;
+  type: string;
+  framework: string;
+  price?: number | null;
+  discountPrice?: number | null;
 }
 
 export interface UpdateUIComponentDto extends Partial<CreateUIComponentDto> {} 
