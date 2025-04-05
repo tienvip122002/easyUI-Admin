@@ -15,9 +15,6 @@ import CategoryList from './pages/category/CategoryList';
 import CategoryCreate from './pages/category/CategoryCreate';
 import CategoryEdit from './pages/category/CategoryEdit';
 import CategoryView from './pages/category/CategoryView';
-import CommentList from './pages/comment/CommentList';
-import CommentEdit from './pages/comment/CommentEdit';
-import CommentView from './pages/comment/CommentView';
 import TagList from './pages/tag/TagList';
 import TagCreate from './pages/tag/TagCreate';
 import TagEdit from './pages/tag/TagEdit';
@@ -26,6 +23,7 @@ import ComponentCreate from './pages/uicomponent/ComponentCreate';
 import ComponentView from './pages/uicomponent/ComponentView';
 import ComponentList from './pages/uicomponent/ComponentList';
 import ComponentEdit from './pages/uicomponent/ComponentEdit';
+import ComponentComments from './pages/uicomponent/ComponentComments';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -73,17 +71,13 @@ const App: React.FC = () => {
               <Route path="component/create" element={<ComponentCreate />} />
               <Route path="component/edit/:id" element={<ComponentEdit />} />
               <Route path="component/view/:id" element={<ComponentView />} />
+              <Route path="component/comments/:id" element={<ComponentComments />} />
               
               {/* Category Routes */}
               <Route path="category" element={<CategoryList />} />
               <Route path="category/create" element={<CategoryCreate />} />
               <Route path="category/edit/:id" element={<CategoryEdit />} />
               <Route path="category/view/:id" element={<CategoryView />} />
-              
-              {/* Comment Routes */}
-              <Route path="comment" element={<CommentList />} />
-              <Route path="comment/edit/:id" element={<CommentEdit />} />
-              <Route path="comment/view/:id" element={<CommentView />} />
               
               {/* Tag Routes */}
               <Route path="tag" element={<TagList />} />

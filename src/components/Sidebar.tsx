@@ -12,13 +12,13 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
     { path: '/', icon: HomeIcon, label: 'Dashboard' },
     { path: '/component', icon: Squares2X2Icon, label: 'UI Components' },
     { path: '/tag', icon: TagIcon, label: 'Tags' },
-    { path: '/comment', icon: ChatBubbleLeftIcon, label: 'Comments' },
     { path: '/category', icon: Cog6ToothIcon, label: 'Categories' },
+    { path: '/comment', icon: ChatBubbleLeftIcon, label: 'Comments' },
   ];
   
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full w-full  flex flex-col">
       {/* Logo */}
       <div className="h-16 flex items-center px-4">
         <h1 className={`text-white text-xl font-bold transition-all duration-300

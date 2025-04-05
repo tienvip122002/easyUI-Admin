@@ -1,100 +1,102 @@
-import { useState } from 'react';
+import React, { useEffect } from 'react';
+import { Table, Space, Button, Tag, Popconfirm } from 'antd';
+import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import Table from '../../components/common/Table';
+import { useCategories } from '../../hooks/useCategories';
+import { Category } from '../../models/category';
+import styled from 'styled-components';
 
-const CategoryList = () => {
+const StyledCard = styled.div`
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const HeaderContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
+const Title = styled.h4`
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+`;
+
+const CategoryList: React.FC = () => {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const { categories, loading, fetchCategories, deleteCategory } = useCategories();
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const columns = [
-    { key: 'id', header: 'ID', width: '100px' },
-    { key: 'name', header: 'Name' },
-    { key: 'description', header: 'Description' },
-    { key: 'status', header: 'Status', width: '120px' },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+      render: (description: string) => description || 'No description',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'isActive',
+      key: 'status',
+      render: (isActive: boolean) => (
+        <Tag color={isActive ? 'green' : 'red'}>
+          {isActive ? 'Active' : 'Inactive'}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_: any, record: Category) => (
+        <Space>
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => navigate(`/category/edit/${record.id}`)}
+          />
+          <Popconfirm
+            title="Are you sure you want to delete this category?"
+            onConfirm={() => deleteCategory(record.id)}
+          >
+            <Button danger icon={<DeleteOutlined />} />
+          </Popconfirm>
+        </Space>
+      ),
+    },
   ];
-
-  // Mock data - replace with API call
-  const data = [
-    { id: '1', name: 'Category 1', description: 'Description 1', status: 'Active' },
-    { id: '2', name: 'Category 2', description: 'Description 2', status: 'Inactive' },
-  ];
-
-  const handleView = (id: string) => {
-    navigate(`/category/view/${id}`);
-  };
-
-  const handleEdit = (id: string) => {
-    navigate(`/category/edit/${id}`);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this category?')) {
-      // Add delete API call here
-      console.log('Delete category:', id);
-    }
-  };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Categories</h1>
-        <button
+    <StyledCard>
+      <HeaderContainer>
+        <Title level={4}>Categories</Title>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
           onClick={() => navigate('/category/create')}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
-          + CREATE
-        </button>
-      </div>
+          Add Category
+        </Button>
+      </HeaderContainer>
 
-      {/* Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
-          <select
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700"
-          >
-            <option value="">All Roles</option>
-            <option value="admin">Admin</option>
-            <option value="user">User</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700"
-          >
-            <option value="">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search..."
-            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700"
-          />
-        </div>
-      </div>
-
-      {/* Table */}
       <Table
         columns={columns}
-        data={data}
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        dataSource={categories}
+        loading={loading}
+        rowKey="id"
       />
-    </div>
+    </StyledCard>
   );
 };
 

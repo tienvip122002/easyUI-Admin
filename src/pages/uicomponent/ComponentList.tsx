@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Space, Button, message, Popconfirm, Card, Typography, Switch, Tag, Tooltip } from 'antd';
-import { EditOutlined, EyeOutlined, DeleteOutlined, PlusOutlined, BulbOutlined } from '@ant-design/icons';
+import { EditOutlined, EyeOutlined, DeleteOutlined, PlusOutlined, BulbOutlined, CommentOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { UIComponent } from '../../models/uicomponent';
 import { UIComponentService } from '../../services/uicomponent.service';
@@ -132,6 +132,10 @@ const ComponentList: React.FC = () => {
               icon={<DeleteOutlined />}
             />
           </Popconfirm>
+          <Button
+            icon={<CommentOutlined />}
+            onClick={() => navigate(`/component/comments/${record.id}`)}
+          />
         </Space>
       ),
     },

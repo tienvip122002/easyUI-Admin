@@ -1,84 +1,106 @@
-import { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { Card, Form, Input, Button, Typography, Space, Spin } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTags } from '../../hooks/useTags';
+import { TagService } from '../../services/tag.service';
+import { UpdateTagRequest } from '../../models/tag';
+import styled from 'styled-components';
+import { updateTagSchema } from '../../validations/tag.schema';
+import { validateSchema } from '../../utils/validation';
 
-const TagEdit = () => {
+const { Title } = Typography;
+
+const StyledCard = styled(Card)`
+  margin: 24px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+`;
+
+const TagEdit: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [formData, setFormData] = useState({
-    name: '',
-    description: ''
-  });
+  const { updateTag, loading } = useTags();
+  const [form] = Form.useForm();
+  const [initialLoading, setInitialLoading] = React.useState(true);
 
   useEffect(() => {
-    // Add API call to fetch tag data
-    setFormData({
-      name: 'Sample Tag',
-      description: 'Sample description'
-    });
-  }, [id]);
+    const fetchTag = async () => {
+      try {
+        if (!id) {
+          throw new Error('Tag ID is required');
+        }
+        const tagData = await TagService.getById(id);
+        form.setFieldsValue(tagData);
+      } catch (error) {
+        console.error('Error fetching tag:', error);
+      } finally {
+        setInitialLoading(false);
+      }
+    };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    fetchTag();
+  }, [id, form]);
+
+  const handleSubmit = async (values: UpdateTagRequest) => {
     try {
-      // Add API call here
-      console.log('Update tag:', id, formData);
+      if (!id) {
+        throw new Error('Tag ID is required');
+      }
+      await validateSchema(updateTagSchema, values);
+      await updateTag(id, values);
       navigate('/tag');
-    } catch (error) {
-      console.error('Error updating tag:', error);
+    } catch (error: any) {
+      console.error('Submit error:', error);
     }
   };
 
+  if (initialLoading) {
+    return (
+      <LoadingContainer>
+        <Spin size="large" />
+      </LoadingContainer>
+    );
+  }
+
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Tag</h1>
-      </div>
+    <StyledCard>
+      <Title level={4}>Edit Tag</Title>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        autoComplete="off"
+      >
+        <Form.Item
+          label="Name"
+          name="name"
+          rules={[
+            { required: true, message: 'Please input tag name!' },
+            { min: 2, message: 'Name must be at least 2 characters' },
+            { max: 50, message: 'Name must not exceed 50 characters' }
+          ]}
+        >
+          <Input placeholder="Enter tag name" />
+        </Form.Item>
 
-      <form onSubmit={handleSubmit} className="max-w-2xl bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Name
-            </label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Description
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700"
-              rows={4}
-            />
-          </div>
-        </div>
-
-        <div className="mt-6 flex items-center space-x-4">
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Update
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/tag')}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
+        <Form.Item>
+          <Space>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Update
+            </Button>
+            <Button onClick={() => navigate('/tag')}>Cancel</Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </StyledCard>
   );
 };
 
