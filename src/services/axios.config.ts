@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { message } from 'antd';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://localhost:44319/api',
+  baseURL: '/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
@@ -25,7 +26,6 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// Thêm chi tiết log lỗi
 axiosInstance.interceptors.response.use(
   response => response,
   error => {
@@ -40,6 +40,23 @@ axiosInstance.interceptors.response.use(
         headers: error.config?.headers
       }
     });
+
+    // Xử lý các loại lỗi
+    if (error.response) {
+      switch (error.response.status) {
+        case 401:
+          localStorage.removeItem('token');
+          message.error('Phiên đăng nhập hết hạn');
+          window.location.href = '/login';
+          break;
+        case 404:
+          message.error('Không tìm thấy dữ liệu');
+          break;
+        default:
+          message.error('Có lỗi xảy ra, vui lòng thử lại');
+      }
+    }
+    
     return Promise.reject(error);
   }
 );

@@ -13,7 +13,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
     { path: '/component', icon: Squares2X2Icon, label: 'UI Components' },
     { path: '/tag', icon: TagIcon, label: 'Tags' },
     { path: '/category', icon: Cog6ToothIcon, label: 'Categories' },
-    { path: '/comment', icon: ChatBubbleLeftIcon, label: 'Comments' },
+    { path: '/cart', icon: ChatBubbleLeftIcon, label: 'CartsPage' },
   ];
   
 

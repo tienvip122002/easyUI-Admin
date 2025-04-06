@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import "./loginregister.css";
+import axios from "axios";
+import { message } from "antd";
 
 const LoginRegister = () => {
   const [checked, setChecked] = useState(false); // false = sign up, true = login
@@ -12,13 +14,19 @@ const LoginRegister = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     try {
-      await login({
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
+      const response = await axios.post('/api/auth/login', {
+        email: formData.get('email'),
+        password: formData.get('password')
       });
+      const { token } = response.data;
+      
+      // Lưu token
+      localStorage.setItem('token', token);
+      
+      // Redirect sau khi login thành công
       navigate('/');
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      message.error('Đăng nhập thất bại');
     }
   };
 
