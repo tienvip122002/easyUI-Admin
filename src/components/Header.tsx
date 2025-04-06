@@ -1,6 +1,18 @@
-import { MagnifyingGlassIcon, BellIcon, UserIcon, SunIcon, MoonIcon, Bars3Icon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import {
+  MagnifyingGlassIcon,
+  BellIcon,
+  UserIcon,
+  SunIcon,
+  MoonIcon,
+  Bars3Icon,
+  ChevronLeftIcon,
+  ChevronRightIcon
+} from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { message } from 'antd';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -11,6 +23,22 @@ interface HeaderProps {
 const Header = ({ onMenuClick, onToggleSidebar, isSidebarOpen }: HeaderProps) => {
   const navigate = useNavigate();
   const { darkMode, toggleDarkMode } = useTheme();
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const handleLogout = () => {
+    try {
+      // Xóa token khỏi localStorage
+      localStorage.removeItem('token');
+      
+      // Hiển thị thông báo thành công
+      message.success('Đăng xuất thành công');
+      
+      // Chuyển hướng về trang login
+      navigate('/login');
+    } catch (error) {
+      message.error('Có lỗi xảy ra khi đăng xuất');
+    }
+  };
 
   return (
     <header className="bg-white dark:bg-gray-800 shadow-sm z-10 transition-colors duration-200">
@@ -51,17 +79,56 @@ const Header = ({ onMenuClick, onToggleSidebar, isSidebarOpen }: HeaderProps) =>
         </div>
 
         {/* Right side icons */}
-        <div className="flex items-center space-x-2 sm:space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4 relative">
+          {/* Bell icon */}
           <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
             <BellIcon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
           </button>
-          <button 
-            onClick={() => navigate('/login')} 
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200"
+
+          {/* User dropdown */}
+          <div
+            className="relative"
+            onMouseEnter={() => setShowDropdown(true)}
+            onMouseLeave={() => setShowDropdown(false)}
           >
-            <UserIcon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
-          </button>
-          <button 
+            <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
+              <UserIcon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+            </button>
+
+            <AnimatePresence>
+              {showDropdown && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 shadow-lg rounded-md py-2 z-50"
+                >
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Profile
+                  </a>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Settings
+                  </a>
+                  <a
+                    onClick={handleLogout}
+                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
+                  >
+                    Logout
+                  </a>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Dark mode toggle */}
+          <button
             onClick={toggleDarkMode}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200"
             aria-label="Toggle dark mode"

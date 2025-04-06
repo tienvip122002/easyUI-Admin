@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import "./loginregister.css";
 import axios from "axios";
@@ -9,6 +9,15 @@ const LoginRegister = () => {
   const [checked, setChecked] = useState(false); // false = sign up, true = login
   const { login, register, loading, error } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Kiểm tra nếu đã đăng nhập thì redirect về trang chủ
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/');
+    }
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,11 +29,13 @@ const LoginRegister = () => {
       });
       const { token } = response.data;
       
-      // Lưu token
       localStorage.setItem('token', token);
       
-      // Redirect sau khi login thành công
-      navigate('/');
+      // Redirect to the page user tried to access before login, or home
+      const from = (location.state as any)?.from?.pathname || '/';
+      navigate(from);
+      
+      message.success('Đăng nhập thành công!');
     } catch (error) {
       message.error('Đăng nhập thất bại');
     }
