@@ -1,12 +1,13 @@
 import React from 'react';
 import { ConfigProvider, theme as antTheme } from 'antd';
 import { useTheme } from './hooks/useTheme';
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import styled, { createGlobalStyle } from 'styled-components';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import PrivateRoute from './components/PrivateRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
@@ -55,16 +56,18 @@ const App: React.FC = () => {
       }}>
         <GlobalStyle theme={theme} />
         <ThemeProvider>
-          <Router>
+          <BrowserRouter>
             <Routes>
-              <Route element={<AuthLayout />}>
-                <Route path="/login" element={<LoginRegister />} />
-              </Route>
-
+              {/* Public Routes */}
+              <Route path="/login" element={<LoginRegister />} />
+              
+              {/* Protected Routes */}
               <Route path="/" element={
-                <PrivateRoute>
-                  <MainLayout />
-                </PrivateRoute>
+                <ProtectedRoute>
+                  <PrivateRoute>
+                    <MainLayout />
+                  </PrivateRoute>
+                </ProtectedRoute>
               }>
                 <Route index element={<Dashboard />} />
                 
@@ -93,13 +96,18 @@ const App: React.FC = () => {
 
                 {/* Cart Routes */}
                 <Route path="cart" element={
-                  <ErrorBoundary>
-                    <CartsPage />
-                  </ErrorBoundary>
+                  <ProtectedRoute>
+                    <ErrorBoundary>
+                      <CartsPage />
+                    </ErrorBoundary>
+                  </ProtectedRoute>
                 } />
               </Route>
+
+              {/* Redirect to home if path doesn't match */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-          </Router>
+          </BrowserRouter>
         </ThemeProvider>
       </ConfigProvider>
     </QueryClientProvider>
