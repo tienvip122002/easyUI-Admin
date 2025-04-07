@@ -28,6 +28,7 @@ import ComponentList from './pages/uicomponent/ComponentList';
 import ComponentEdit from './pages/uicomponent/ComponentEdit';
 import ComponentComments from './pages/uicomponent/ComponentComments';
 import CartsPage from './pages/cart/CartsPage';
+import ProfilePage from './pages/profile/ProfilePage';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -100,6 +101,12 @@ const App: React.FC = () => {
                     <ErrorBoundary>
                       <CartsPage />
                     </ErrorBoundary>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="profile" element={
+                  <ProtectedRoute>
+                    <ProfilePage />
                   </ProtectedRoute>
                 } />
               </Route>
