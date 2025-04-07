@@ -105,8 +105,8 @@ const Header = ({ onMenuClick, onToggleSidebar, isSidebarOpen }: HeaderProps) =>
                   className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 shadow-lg rounded-md py-2 z-50"
                 >
                   <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600"
+                    onClick={() => navigate('/profile')}
+                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
                   >
                     Profile
                   </a>
