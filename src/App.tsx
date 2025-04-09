@@ -29,6 +29,8 @@ import ComponentEdit from './pages/uicomponent/ComponentEdit';
 import ComponentComments from './pages/uicomponent/ComponentComments';
 import CartsPage from './pages/cart/CartsPage';
 import ProfilePage from './pages/profile/ProfilePage';
+import OrdersPage from './pages/orders/OrdersPage';
+import AboutUsPage from './pages/aboutUs/AboutUsPage';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -107,6 +109,18 @@ const App: React.FC = () => {
                 <Route path="profile" element={
                   <ProtectedRoute>
                     <ProfilePage />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="orders" element={
+                  <ProtectedRoute>
+                    <OrdersPage />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="aboutUs" element={
+                  <ProtectedRoute>
+                    <AboutUsPage />
                   </ProtectedRoute>
                 } />
               </Route>
