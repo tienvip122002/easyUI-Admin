@@ -14,6 +14,8 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
     { path: '/tag', icon: TagIcon, label: 'Tags' },
     { path: '/category', icon: Cog6ToothIcon, label: 'Categories' },
     { path: '/cart', icon: ChatBubbleLeftIcon, label: 'CartsPage' },
+    { path: '/orders', icon: ChatBubbleLeftIcon, label: 'Orders' },
+    { path: '/aboutUs', icon: ChatBubbleLeftIcon, label: 'About Us' },
   ];
   
 

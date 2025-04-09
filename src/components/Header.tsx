@@ -117,6 +117,12 @@ const Header = ({ onMenuClick, onToggleSidebar, isSidebarOpen }: HeaderProps) =>
                     Settings
                   </a>
                   <a
+                    onClick={() => navigate('/orders')}
+                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
+                  >
+                    Quản lý đơn hàng
+                  </a>
+                  <a
                     onClick={handleLogout}
                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
                   >
