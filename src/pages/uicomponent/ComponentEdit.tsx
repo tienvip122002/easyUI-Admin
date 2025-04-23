@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Button, Card, message, Space } from 'antd';
+import { Form, Input, Select, Button, Card, message, Space, Spin } from 'antd';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { SaveOutlined, RollbackOutlined } from '@ant-design/icons';
 import Editor from '@monaco-editor/react';
@@ -7,6 +7,8 @@ import { useUIComponentEdit } from '../../hooks/useUIComponentEdit';
 import { UpdateUIComponentRequest } from '../../models/uicomponent';
 import { styled } from 'styled-components';
 import CommentList from '../../components/comment/CommentList';
+import { CategoryService } from '../../services/category.service';
+import { TagService } from '../../services/tag.service';
 
 const { Option } = Select;
 
@@ -82,8 +84,45 @@ const ComponentEdit: React.FC = () => {
   const [htmlCode, setHtmlCode] = useState('');
   const [cssCode, setCssCode] = useState('');
   const [jsCode, setJsCode] = useState('');
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [tags, setTags] = useState<{ id: string; name: string }[]>([]);
+  const [loadingTags, setLoadingTags] = useState(false);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
 
   const showCommentsInitially = location.state?.showComments;
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoadingCategories(true);
+        const categoriesData = await CategoryService.getAll();
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        message.error('Failed to load categories');
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    const fetchTags = async () => {
+      try {
+        setLoadingTags(true);
+        const tagsData = await TagService.getAll();
+        setTags(tagsData);
+      } catch (error) {
+        console.error('Error fetching tags:', error);
+        message.error('Failed to load tags');
+      } finally {
+        setLoadingTags(false);
+      }
+    };
+
+    fetchCategories();
+    fetchTags();
+  }, []);
 
   useEffect(() => {
     if (component) {
@@ -94,11 +133,15 @@ const ComponentEdit: React.FC = () => {
         framework: component.framework,
         previewUrl: component.previewUrl,
         price: component.price,
-        discountPrice: component.discountPrice
+        discountPrice: component.discountPrice,
+        categoryId: component.categoryId,
+        tags: component.tags?.map(tag => tag.id) || []
       });
       setHtmlCode(component.html || '');
       setCssCode(component.css || '');
       setJsCode(component.js || '');
+      setSelectedCategoryIds(component.categoryId ? [component.categoryId] : []);
+      setSelectedTagIds(component.tags?.map(tag => tag.id) || []);
     }
   }, [component, form]);
 
@@ -116,8 +159,10 @@ const ComponentEdit: React.FC = () => {
         previewUrl: values.previewUrl?.trim() || null,
         type: values.type.trim(),
         framework: values.framework.trim(),
-        price: values.price ? Number(values.price) : null,
-        discountPrice: values.discountPrice ? Number(values.discountPrice) : null
+        price: values.price ? Number(values.price) : 0,
+        discountPrice: values.discountPrice ? Number(values.discountPrice) : 0,
+        categoryId: values.categoryId,
+        tagIds: values.tags || []
       };
 
       console.log('Submitting data:', submitData); // Debug log
@@ -202,7 +247,6 @@ const ComponentEdit: React.FC = () => {
             <Form.Item
               name="price"
               label="Price"
-              rules={[{ type: 'number', transform: (value) => Number(value) }]}
             >
               <Input size="large" type="number" placeholder="Enter price" />
             </Form.Item>
@@ -210,9 +254,52 @@ const ComponentEdit: React.FC = () => {
             <Form.Item
               name="discountPrice"
               label="Discount Price"
-              rules={[{ type: 'number', transform: (value) => Number(value) }]}
             >
               <Input size="large" type="number" placeholder="Enter discount price" />
+            </Form.Item>
+            
+            <Form.Item
+              name="categoryId"
+              label="Category"
+              rules={[{ required: true, message: 'Please select a category' }]}
+            >
+              <Select
+                placeholder="Select a category"
+                loading={loadingCategories}
+                disabled={loadingCategories}
+                optionFilterProp="children"
+                style={{ width: '100%' }}
+                size="large"
+              >
+                {categories.map(category => (
+                  <Select.Option key={category.id} value={category.id}>
+                    {category.name}
+                  </Select.Option>
+                ))}
+              </Select>
+              {loadingCategories && <Spin size="small" style={{ marginLeft: 8 }} />}
+            </Form.Item>
+
+            <Form.Item
+              name="tags"
+              label="Tags"
+            >
+              <Select
+                mode="multiple"
+                placeholder="Select tags"
+                loading={loadingTags}
+                disabled={loadingTags}
+                optionFilterProp="children"
+                style={{ width: '100%' }}
+                size="large"
+              >
+                {tags.map(tag => (
+                  <Select.Option key={tag.id} value={tag.id}>
+                    {tag.name}
+                  </Select.Option>
+                ))}
+              </Select>
+              {loadingTags && <Spin size="small" style={{ marginLeft: 8 }} />}
             </Form.Item>
           </FormFieldsContainer>
 
