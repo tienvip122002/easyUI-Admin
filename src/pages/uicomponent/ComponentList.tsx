@@ -76,15 +76,21 @@ const ComponentList: React.FC = () => {
       key: 'description',
       width: 250,
       render: (description: string) => (
-        <Tooltip title={description}>
-          <div style={{ 
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-          }}>
-            {description || 'No description'}
-          </div>
-        </Tooltip>
+        <div style={{ 
+          maxHeight: '100px',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          padding: '5px',
+          wordBreak: 'break-word',
+          border: '1px solid #333',
+          borderRadius: '4px',
+          backgroundColor: '#333', 
+          color: '#fff',
+          fontSize: '14px',
+          lineHeight: '1.5'
+        }}>
+          {description || 'No description'}
+        </div>
       ),
     },
     {
@@ -110,7 +116,7 @@ const ComponentList: React.FC = () => {
       title: 'Actions',
       key: 'actions',
       width: 10,
-      render: (_, record: UIComponent) => (
+      render: (_: any, record: UIComponent) => (
         <Space>
           <Button 
             icon={<EyeOutlined />}

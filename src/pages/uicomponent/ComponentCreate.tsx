@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { Form, Input, Select, Button, Card, message, Space } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Form, Input, Select, Button, Card, message, Space, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { UIComponentService } from '../../services/uicomponent.service';
+import { CategoryService } from '../../services/category.service';
+import { TagService } from '../../services/tag.service';
 import Editor from '@monaco-editor/react';
 import styled from 'styled-components';
 import { SaveOutlined, RollbackOutlined } from '@ant-design/icons';
@@ -76,6 +78,41 @@ const ComponentCreate: React.FC = () => {
   const [htmlCode, setHtmlCode] = useState('');
   const [cssCode, setCssCode] = useState('');
   const [jsCode, setJsCode] = useState('');
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [tags, setTags] = useState<{ id: string; name: string }[]>([]);
+  const [loadingTags, setLoadingTags] = useState(false);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoadingCategories(true);
+        const categoriesData = await CategoryService.getAll();
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        message.error('Failed to load categories');
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    const fetchTags = async () => {
+      try {
+        setLoadingTags(true);
+        const tagsData = await TagService.getAll();
+        setTags(tagsData);
+      } catch (error) {
+        console.error('Error fetching tags:', error);
+        message.error('Failed to load tags');
+      } finally {
+        setLoadingTags(false);
+      }
+    };
+
+    fetchCategories();
+    fetchTags();
+  }, []);
 
   const handleSubmit = async (values: any) => {
     try {
@@ -94,8 +131,10 @@ const ComponentCreate: React.FC = () => {
         previewUrl: values.previewUrl?.trim() || null,
         type: values.type.trim(),
         framework: values.framework.trim(),
-        price: values.price ? Number(values.price) : null,
-        discountPrice: values.discountPrice ? Number(values.discountPrice) : null
+        price: values.price ? Number(values.price) : 0,
+        discountPrice: values.discountPrice ? Number(values.discountPrice) : 0,
+        categoryId: values.categoryId,
+        tagIds: values.tags || []
       };
 
       if (!submitData.type || !submitData.framework) {
@@ -103,7 +142,7 @@ const ComponentCreate: React.FC = () => {
         return;
       }
 
-      await UIComponentService.create(submitData);
+      const createdComponent = await UIComponentService.create(submitData);
       message.success('Component created successfully');
       navigate('/component');
     } catch (error: any) {
@@ -172,7 +211,6 @@ const ComponentCreate: React.FC = () => {
             <Form.Item
               name="price"
               label="Price"
-              rules={[{ type: 'number', transform: (value) => Number(value) }]}
             >
               <Input type="number" placeholder="Enter price" />
             </Form.Item>
@@ -180,9 +218,50 @@ const ComponentCreate: React.FC = () => {
             <Form.Item
               name="discountPrice"
               label="Discount Price"
-              rules={[{ type: 'number', transform: (value) => Number(value) }]}
             >
               <Input type="number" placeholder="Enter discount price" />
+            </Form.Item>
+
+            <Form.Item
+              name="categoryId"
+              label="Category"
+              rules={[{ required: true, message: 'Please select a category' }]}
+            >
+              <Select
+                placeholder="Select a category"
+                loading={loadingCategories}
+                disabled={loadingCategories}
+                optionFilterProp="children"
+                style={{ width: '100%' }}
+              >
+                {categories.map(category => (
+                  <Select.Option key={category.id} value={category.id}>
+                    {category.name}
+                  </Select.Option>
+                ))}
+              </Select>
+              {loadingCategories && <Spin size="small" style={{ marginLeft: 8 }} />}
+            </Form.Item>
+
+            <Form.Item
+              name="tags"
+              label="Tags"
+            >
+              <Select
+                mode="multiple"
+                placeholder="Select tags"
+                loading={loadingTags}
+                disabled={loadingTags}
+                optionFilterProp="children"
+                style={{ width: '100%' }}
+              >
+                {tags.map(tag => (
+                  <Select.Option key={tag.id} value={tag.id}>
+                    {tag.name}
+                  </Select.Option>
+                ))}
+              </Select>
+              {loadingTags && <Spin size="small" style={{ marginLeft: 8 }} />}
             </Form.Item>
           </FormFieldsContainer>
 

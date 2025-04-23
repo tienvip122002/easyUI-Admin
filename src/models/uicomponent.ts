@@ -1,3 +1,5 @@
+import { Tag } from './tag';
+
 export interface UIComponent {
   id: string;
   name: string;
@@ -15,6 +17,8 @@ export interface UIComponent {
   createdBy: string;
   updatedAt?: string;
   updatedBy?: string;
+  tags?: Tag[];
+  categoryId?: string;
 }
 
 export interface CreateUIComponentDto {
@@ -37,6 +41,8 @@ export interface UpdateUIComponentRequest {
   framework: string;
   price?: number | null;
   discountPrice?: number | null;
+  categoryId?: string;
+  tagIds?: string[];
 }
 
 export interface UpdateUIComponentDto extends Partial<CreateUIComponentDto> {} 

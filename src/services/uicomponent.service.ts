@@ -1,5 +1,5 @@
 import axiosInstance from './axios.config';
-import { UIComponent, CreateUIComponentDto, UpdateUIComponentDto } from '../models/uicomponent';
+import { UIComponent, CreateUIComponentDto, UpdateUIComponentDto, UpdateUIComponentRequest } from '../models/uicomponent';
 
 const API_URL = 'UIComponent';
 
@@ -14,6 +14,8 @@ interface CreateUIComponentRequest {
   framework: string;
   price?: number | null;
   discountPrice?: number | null;
+  categoryId?: string;
+  tagIds?: string[];
 }
 
 export const UIComponentService = {
@@ -60,12 +62,30 @@ export const UIComponentService = {
         type: data.type.trim(),
         framework: data.framework.trim(),
         price: data.price ? Number(data.price) : null,
-        discountPrice: data.discountPrice ? Number(data.discountPrice) : null
+        discountPrice: data.discountPrice ? Number(data.discountPrice) : null,
+        categoryId: data.categoryId
       };
 
       console.log('API Data being sent:', JSON.stringify(apiData, null, 2));
       const response = await axiosInstance.post('/UIComponent', apiData);
       console.log('Server response:', response.data);
+      
+      // If the component was created successfully and has a category, add it
+      if (response.data && response.data.id && data.categoryId) {
+        console.log('Adding category to component:', data.categoryId);
+        await axiosInstance.post(`/UIComponent/${response.data.id}/categories`, {
+          categoryIds: [data.categoryId]
+        });
+      }
+      
+      // If the component was created successfully and has tags, add them
+      if (response.data && response.data.id && data.tagIds && data.tagIds.length > 0) {
+        console.log('Adding tags to component:', data.tagIds);
+        await axiosInstance.post(`/UIComponent/${response.data.id}/tags`, {
+          tagIds: data.tagIds
+        });
+      }
+      
       return response.data;
     } catch (error) {
       console.error('Create component error:', error);
@@ -86,11 +106,29 @@ export const UIComponentService = {
         type: data.type,
         framework: data.framework,
         price: data.price ? Number(data.price) : null,
-        discountPrice: data.discountPrice ? Number(data.discountPrice) : null
+        discountPrice: data.discountPrice ? Number(data.discountPrice) : null,
+        categoryId: data.categoryId
       };
 
       const response = await axiosInstance.put(`${API_URL}/${id}`, apiData);
       console.log('Update response:', response.data); // Debug log
+      
+      // Update category if provided
+      if (data.categoryId) {
+        console.log('Updating category for component:', data.categoryId);
+        await axiosInstance.post(`${API_URL}/${id}/categories`, {
+          categoryIds: [data.categoryId]
+        });
+      }
+      
+      // Update tags if provided
+      if (data.tagIds && data.tagIds.length > 0) {
+        console.log('Updating tags for component:', data.tagIds);
+        await axiosInstance.post(`${API_URL}/${id}/tags`, {
+          tagIds: data.tagIds
+        });
+      }
+      
       return response.data;
     } catch (error) {
       console.error('Update service error:', error);
