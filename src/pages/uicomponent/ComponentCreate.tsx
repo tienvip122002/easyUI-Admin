@@ -78,6 +78,8 @@ const ComponentCreate: React.FC = () => {
   const [htmlCode, setHtmlCode] = useState('');
   const [cssCode, setCssCode] = useState('');
   const [jsCode, setJsCode] = useState('');
+  const [price, setPrice] = useState('0'); // Quản lý giá trị price riêng
+  const [discountPrice, setDiscountPrice] = useState('0'); // Quản lý giá trị discountPrice riêng
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [tags, setTags] = useState<{ id: string; name: string }[]>([]);
@@ -131,8 +133,10 @@ const ComponentCreate: React.FC = () => {
         previewUrl: values.previewUrl?.trim() || null,
         type: values.type.trim(),
         framework: values.framework.trim(),
-        price: values.price ? Number(values.price) : 0,
-        discountPrice: values.discountPrice ? Number(values.discountPrice) : 0,
+        // Sử dụng parseFloat trực tiếp với biến price từ state
+        price: parseFloat(price) || 0,
+        // Sử dụng parseFloat trực tiếp với biến discountPrice từ state
+        discountPrice: parseFloat(discountPrice) || 0,
         categoryId: values.categoryId,
         tagIds: values.tags || []
       };
@@ -209,17 +213,33 @@ const ComponentCreate: React.FC = () => {
             </Form.Item>
 
             <Form.Item
-              name="price"
               label="Price"
             >
-              <Input type="number" placeholder="Enter price" />
+              <input
+                type="number"
+                className="price-input"
+                placeholder="Enter price"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                min="0"
+                step="0.01"
+                style={{ width: '100%', padding: '4px 11px', borderRadius: '6px', border: '1px solid #d9d9d9' }}
+              />
             </Form.Item>
 
             <Form.Item
-              name="discountPrice"
               label="Discount Price"
             >
-              <Input type="number" placeholder="Enter discount price" />
+              <input
+                type="number"
+                className="discount-price-input"
+                placeholder="Enter discount price"
+                value={discountPrice}
+                onChange={(e) => setDiscountPrice(e.target.value)}
+                min="0"
+                step="0.01"
+                style={{ width: '100%', padding: '4px 11px', borderRadius: '6px', border: '1px solid #d9d9d9' }}
+              />
             </Form.Item>
 
             <Form.Item
