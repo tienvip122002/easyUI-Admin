@@ -61,8 +61,10 @@ export const UIComponentService = {
         previewUrl: data.previewUrl?.trim() || null,
         type: data.type.trim(),
         framework: data.framework.trim(),
-        price: data.price ? Number(data.price) : null,
-        discountPrice: data.discountPrice ? Number(data.discountPrice) : null,
+        // Đảm bảo price luôn là số (0 thay vì null)
+        price: data.price !== undefined && data.price !== null ? Number(data.price) : 0,
+        // Đảm bảo discountPrice luôn là số (0 thay vì null)
+        discountPrice: data.discountPrice !== undefined && data.discountPrice !== null ? Number(data.discountPrice) : 0,
         categoryId: data.categoryId
       };
 
@@ -105,8 +107,10 @@ export const UIComponentService = {
         previewUrl: data.previewUrl || null,
         type: data.type,
         framework: data.framework,
-        price: data.price ? Number(data.price) : null,
-        discountPrice: data.discountPrice ? Number(data.discountPrice) : null,
+        // Đảm bảo price luôn là số (0 thay vì null)
+        price: data.price !== undefined && data.price !== null ? Number(data.price) : 0,
+        // Đảm bảo discountPrice luôn là số (0 thay vì null)
+        discountPrice: data.discountPrice !== undefined && data.discountPrice !== null ? Number(data.discountPrice) : 0,
         categoryId: data.categoryId
       };
 
