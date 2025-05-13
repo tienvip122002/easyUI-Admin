@@ -1,26 +1,10 @@
 import React, { useEffect } from 'react';
-import { Table, Space, Button, Popconfirm, Card, Typography } from 'antd';
+import { Table, Space, Button, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useTags } from '../../hooks/useTags';
 import { Tag } from '../../models/tag';
-import styled from 'styled-components';
-
-const { Title } = Typography;
-
-const StyledCard = styled(Card)`
-  margin: 24px;
-  .ant-card-body {
-    padding: 24px;
-  }
-`;
-
-const HeaderContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-`;
+import StyledCard from '../../components/common/StyledCard';
 
 const TagList: React.FC = () => {
   const navigate = useNavigate();
@@ -68,19 +52,18 @@ const TagList: React.FC = () => {
     },
   ];
 
-  return (
-    <StyledCard>
-      <HeaderContainer>
-        <Title level={4}>Tags</Title>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => navigate('/tag/create')}
-        >
-          Add Tag
-        </Button>
-      </HeaderContainer>
+  const extraContent = (
+    <Button
+      type="primary"
+      icon={<PlusOutlined />}
+      onClick={() => navigate('/tag/create')}
+    >
+      Add Tag
+    </Button>
+  );
 
+  return (
+    <StyledCard title="Tags" extra={extraContent}>
       <Table
         columns={columns}
         dataSource={tags}

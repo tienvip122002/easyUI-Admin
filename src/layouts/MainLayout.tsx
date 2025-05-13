@@ -2,10 +2,61 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import { useTheme } from '../contexts/ThemeContext';
+import themeConfig from '../config/theme';
+import styled from 'styled-components';
+
+interface MainContainerProps {
+  $isDark: boolean;
+}
+
+const MainContainer = styled.div<MainContainerProps>`
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: ${props => props.$isDark ? themeConfig.dark.background : themeConfig.light.background};
+  transition: background-color 0.2s ease-in-out;
+`;
+
+const SidebarContainer = styled.div<{ $isOpen: boolean; $isMobileOpen: boolean; $isDark: boolean }>`
+  position: fixed;
+  @media (min-width: 1024px) {
+    position: relative;
+    display: flex;
+  }
+  
+  width: ${props => props.$isOpen ? '16rem' : '5rem'};
+  transform: ${props => props.$isMobileOpen ? 'translateX(0)' : 'translateX(-100%)'};
+  @media (min-width: 1024px) {
+    transform: translateX(0);
+  }
+  
+  height: 100%;
+  background-color: ${props => themeConfig.light.sidebar};
+  transition: all 0.3s ease-in-out;
+  z-index: 30;
+`;
+
+const ContentContainer = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+`;
+
+const MainContent = styled.main<MainContainerProps>`
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: ${props => props.$isDark ? themeConfig.dark.background : themeConfig.light.background};
+  transition: background-color 0.2s ease-in-out;
+`;
 
 const MainLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const { darkMode } = useTheme();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -16,7 +67,7 @@ const MainLayout = () => {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
+    <MainContainer $isDark={darkMode}>
       {/* Mobile Sidebar Backdrop */}
       {isMobileSidebarOpen && (
         <div 
@@ -26,29 +77,28 @@ const MainLayout = () => {
       )}
 
       {/* Sidebar */}
-      <div className={`
-        fixed lg:relative lg:flex
-        ${sidebarOpen ? 'w-64' : 'w-20'} 
-        ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        h-full bg-[#1e2a3b] dark:bg-gray-800 transition-all duration-300 ease-in-out z-30
-      `}>
+      <SidebarContainer 
+        $isOpen={sidebarOpen} 
+        $isMobileOpen={isMobileSidebarOpen}
+        $isDark={darkMode}
+      >
         <Sidebar isCollapsed={!sidebarOpen} />
-      </div>
+      </SidebarContainer>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <ContentContainer>
         <Header 
           onMenuClick={toggleMobileSidebar}
           onToggleSidebar={toggleSidebar}
           isSidebarOpen={sidebarOpen}
         />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
+        <MainContent $isDark={darkMode}>
           <div className="w-full max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <Outlet />
           </div>
-        </main>
-      </div>
-    </div>
+        </MainContent>
+      </ContentContainer>
+    </MainContainer>
   );
 };
 

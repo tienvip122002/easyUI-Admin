@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { HomeIcon, Squares2X2Icon, TagIcon, ChatBubbleLeftIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, Squares2X2Icon, TagIcon, ChatBubbleLeftIcon, Cog6ToothIcon, DocumentTextIcon, ShoppingCartIcon, UserIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -13,9 +13,10 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
     { path: '/component', icon: Squares2X2Icon, label: 'UI Components' },
     { path: '/tag', icon: TagIcon, label: 'Tags' },
     { path: '/category', icon: Cog6ToothIcon, label: 'Categories' },
-    { path: '/cart', icon: ChatBubbleLeftIcon, label: 'CartsPage' },
-    { path: '/orders', icon: ChatBubbleLeftIcon, label: 'Orders' },
-    { path: '/aboutUs', icon: ChatBubbleLeftIcon, label: 'About Us' },
+    { path: '/cart', icon: ShoppingCartIcon, label: 'CartsPage' },
+    { path: '/orders', icon: ClipboardDocumentListIcon, label: 'Orders' },
+    { path: '/aboutUs', icon: UserIcon, label: 'About Us' },
+    { path: '/article', icon: DocumentTextIcon, label: 'Blog' },
   ];
   
 

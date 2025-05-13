@@ -1,27 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Space, Button, message, Popconfirm, Card, Typography, Switch, Tag, Tooltip } from 'antd';
+import { Table, Space, Button, message, Popconfirm, Switch, Tag, Tooltip } from 'antd';
 import { EditOutlined, EyeOutlined, DeleteOutlined, PlusOutlined, BulbOutlined, CommentOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { UIComponent } from '../../models/uicomponent';
 import { UIComponentService } from '../../services/uicomponent.service';
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '../../contexts/ThemeContext';
+import StyledCard from '../../components/common/StyledCard';
 import styled from 'styled-components';
-
-const { Title } = Typography;
-
-const StyledCard = styled(Card)`
-  margin: 24px;
-  .ant-card-body {
-    padding: 24px;
-  }
-`;
-
-const HeaderContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-`;
 
 const ActionContainer = styled.div`
   display: flex;
@@ -33,7 +18,7 @@ const ComponentList: React.FC = () => {
   const [components, setComponents] = useState<UIComponent[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
+  const { darkMode, toggleDarkMode } = useTheme();
 
   useEffect(() => {
     fetchComponents();
@@ -147,29 +132,28 @@ const ComponentList: React.FC = () => {
     },
   ];
 
-  return (
-    <StyledCard>
-      <HeaderContainer>
-        <Title level={4} style={{ margin: 0 }}>UI Components</Title>
-        <ActionContainer>
-          <Space>
-            <Switch
-              checkedChildren={<BulbOutlined />}
-              unCheckedChildren={<BulbOutlined />}
-              checked={theme === 'dark'}
-              onChange={toggleTheme}
-            />
-            <Button 
-              type="primary" 
-              icon={<PlusOutlined />}
-              onClick={() => navigate('/component/create')}
-            >
-              Add New Component
-            </Button>
-          </Space>
-        </ActionContainer>
-      </HeaderContainer>
+  const extraContent = (
+    <ActionContainer>
+      <Space>
+        <Switch
+          checkedChildren={<BulbOutlined />}
+          unCheckedChildren={<BulbOutlined />}
+          checked={darkMode}
+          onChange={toggleDarkMode}
+        />
+        <Button 
+          type="primary" 
+          icon={<PlusOutlined />}
+          onClick={() => navigate('/component/create')}
+        >
+          Add New Component
+        </Button>
+      </Space>
+    </ActionContainer>
+  );
 
+  return (
+    <StyledCard title="UI Components" extra={extraContent}>
       <Table 
         columns={columns} 
         dataSource={components}
